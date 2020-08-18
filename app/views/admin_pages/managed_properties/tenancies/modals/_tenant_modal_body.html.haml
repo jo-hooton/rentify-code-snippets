@@ -1,0 +1,36 @@
+.modal-body{ data: { tenant_id: tenant.id, user_id: tenant.user.id}  }
+  .container
+    = simple_form_for tenant.user, url: url, defaults: { input_html: { class: 'form-control' } }, remote: true do |f|
+      .form-group.row
+        .col-md-6
+          = f.input :first_name
+        .col-md-6
+          = f.input :last_name
+      .form-group.row
+        .col-md-6
+          = f.input :phone
+        .col-md-6
+          = f.input :email
+      = f.simple_fields_for :tenants, [tenant] do |t|
+        = t.input :id, as: :hidden
+        = t.input :tenancy_id, as: :hidden
+        .row.mb-3
+          - unless tenant.lead_tenant?
+            .col-md-6
+              = t.input :lead_tenant, as: :boolean, input_html: { class: nil, disabled: tenant.permitted_occupier? }, label_html: { class: 'form-check-label' }, label: 'Make lead tenant'
+          .col-md-6
+            = t.input :permitted_occupier, as: :boolean, input_html: { class: nil, disabled: tenant.tenancy.lead_tenant == tenant }, label_html: { class: 'form-check-label' }, label: 'Permitted occupier'
+        - if admin_ability.can?(:set_reference_requirements, tenant.tenancy)
+          .row.mb-3
+            .col-md-6
+              = t.input :skip_financial_reference, as: :boolean, input_html: { class: nil, disabled: tenant.permitted_occupier? }, label_html: { class: 'form-check-label' }, label: 'Skip financial references'
+            .col-md-6
+              = t.input :skip_landlord_reference, as: :boolean, input_html: { class: nil, disabled: tenant.permitted_occupier? }, label_html: { class: 'form-check-label' }, label: 'Skip landlord references'
+            .col-12.mt-2
+              %em
+                Please note, skipping all references will cause the contract
+                to be generated and sent if it has not yet been sent.
+      = f.submit 'Save', class: 'btn btn-primary'
+    - if tenant.persisted? && tenant.is_destroyable?
+      = simple_form_for tenant, url: admin_pages_instruction_tenant_path(tenant.tenancy.instruction, tenant), method: :delete, defaults: { input_html: { class: 'form-control' } }, remote: true, data: {confirm: "Are you sure you want to delete #{tenant.first_name}?"} do |f|
+        = f.submit 'Delete tenant', class: 'btn btn-outline-danger'

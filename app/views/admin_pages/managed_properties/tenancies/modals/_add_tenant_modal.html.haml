@@ -1,0 +1,13 @@
+i.modal.fade{ id: "new-tenant-modal"} 
+  .modal-dialog
+    .modal-content
+      .modal-header
+        .modal-title.row
+          .col-md-12
+            %h2
+              Add new tenant 
+            %em
+              Please note, the lead tenant must not be a permitted occupier.
+
+      = render partial: 'admin_pages/managed_properties/tenancies/modals/tenant_modal_body', locals: { tenant: tenant, url: admin_pages_instruction_tenants_path(tenant.tenancy.instruction, tenant) }
+      

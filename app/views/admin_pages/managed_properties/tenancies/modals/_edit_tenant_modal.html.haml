@@ -1,0 +1,16 @@
+.modal.fade{ id: "tenant-#{tenant.id}"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        .modal-title.row
+          .col-md-12
+            %h2
+              = render partial: 'tenant_type_indicator', locals: { tenant: tenant }
+              #{tenant.name}
+              %span.dot •
+              = link_to 'Edit further details', admin_pages_user_path(tenant.user), class: 'link'
+            %em
+              Please note, the lead tenant must not be a permitted occupier.
+
+      = render partial: 'admin_pages/managed_properties/tenancies/modals/tenant_modal_body', locals: { tenant: tenant, url: admin_pages_instruction_tenant_path(tenant.tenancy.instruction, tenant) }
+
